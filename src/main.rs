@@ -1,11 +1,19 @@
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
+use std::process;
 
 fn main() {
     let args: Vec<String> = env::args()
         .collect();
-    let config = Config::new(&args);
+    let config = Config::new(&args)
+        .unwrap_or_else(
+            |err|
+            {
+                println!("Problem parsing arguments: {}", err);
+                process::exit(1);
+            }
+        );
     println!("Searching for {} in file {}", config.query, config.filename);
 
     let mut contents = String::new();
@@ -22,14 +30,16 @@ struct Config {
 }
 
 impl Config {
-    fn new(args: &[String]) -> Config {
+    fn new(args: &[String]) -> Result<Config, &'static str> {
         if args.len() < 3 {
-            panic!("not enough arguments");
-        }
-
-        Config {
-            query: args[1].clone(),
-            filename: args[2].clone(),
+            Err("not enough arguments")
+        } else {
+            Ok(
+                Config {
+                    query: args[1].clone(),
+                    filename: args[2].clone(),
+                }
+            )
         }
     }
 }

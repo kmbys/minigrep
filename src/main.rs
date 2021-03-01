@@ -5,7 +5,7 @@ use std::io::prelude::*;
 fn main() {
     let args: Vec<String> = env::args()
         .collect();
-    let config = parse_config(&args);
+    let config = Config::new(&args);
     println!("Searching for {} in file {}", config.query, config.filename);
 
     let mut contents = String::new();
@@ -21,9 +21,11 @@ struct Config {
     filename: String,
 }
 
-fn parse_config(args: &[String]) -> Config {
-    Config {
-        query: args[1].clone(),
-        filename: args[2].clone(),
+impl Config {
+    fn new(args: &[String]) -> Config {
+        Config {
+            query: args[1].clone(),
+            filename: args[2].clone(),
+        }
     }
 }

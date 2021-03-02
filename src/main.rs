@@ -2,6 +2,7 @@ use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::process;
+use std::error::Error;
 
 fn main() {
     let args: Vec<String> = env::args()
@@ -16,16 +17,18 @@ fn main() {
         );
     println!("Searching for {} in file {}", config.query, config.filename);
 
-    run(config)
+    if let Err(e) = run(config) {
+        println!("Application error: {}", e);
+        process::exit(1);
+    }
 }
 
-fn run(config: Config) {
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let mut contents = String::new();
-    File::open(config.filename)
-        .expect("file not found")
-        .read_to_string(&mut contents)
-        .expect("something went wrong reading the file");
+    File::open(config.filename)?
+        .read_to_string(&mut contents)?;
     println!("with text:\n{}", contents);
+    Ok(())
 }
 
 struct Config {

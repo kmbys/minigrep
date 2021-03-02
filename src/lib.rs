@@ -6,7 +6,11 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let mut contents = String::new();
     File::open(config.filename)?
         .read_to_string(&mut contents)?;
-    println!("with text:\n{}", contents);
+
+    for line in search(&config.query, &contents) {
+        println!("{}", line);
+    }
+
     Ok(())
 }
 
